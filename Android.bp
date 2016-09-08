@@ -23,8 +23,6 @@ common_cflags = [
 ]
 
 // These parameters change the way jemalloc works.
-//   ANDROID_ALWAYS_PURGE
-//     If defined, always purge immediately when a page is purgeable.
 //   ANDROID_MAX_ARENAS=XX
 //     The total number of arenas will be less than or equal to this number.
 //     The number of arenas will be calculated as 2 * the number of cpus
@@ -43,11 +41,11 @@ common_cflags = [
 //     1 << XX is the default chunk size used by the system. Decreasing this
 //     usually decreases the amount of PSS used, but can increase
 //     fragmentation.
+
+// Default to a single arena for svelte configurations to minimize
+// PSS consumed by jemalloc.
 common_cflags += [
-    "-DANDROID_ALWAYS_PURGE",
-    "-DANDROID_MAX_ARENAS=2",
-    "-DANDROID_TCACHE_NSLOTS_SMALL_MAX=8",
-    "-DANDROID_TCACHE_NSLOTS_LARGE=16",
+    "-DANDROID_MAX_ARENAS=1",
     "-DANDROID_LG_TCACHE_MAXCLASS_DEFAULT=16",
 ]
 
@@ -59,7 +57,13 @@ common_c_local_includes = [
 common_product_variables = {
     // Only enable the tcache on non-svelte configurations, to save PSS.
     malloc_not_svelte: {
-        cflags: ["-DJEMALLOC_TCACHE"],
+        cflags: [
+            "-UANDROID_MAX_ARENAS",
+            "-DANDROID_MAX_ARENAS=2",
+            "-DJEMALLOC_TCACHE",
+            "-DANDROID_TCACHE_NSLOTS_SMALL_MAX=8",
+            "-DANDROID_TCACHE_NSLOTS_LARGE=16",
+        ],
     },
 }
 
@@ -88,6 +92,7 @@ cc_defaults {
     },
 
     local_include_dirs: common_c_local_includes,
+    stl: "none",
 }
 
 lib_src_files = [
@@ -117,6 +122,7 @@ lib_src_files = [
     "src/ticker.c",
     "src/tsd.c",
     "src/util.c",
+    "src/witness.c",
 ]
 
 //-----------------------------------------------------------------------
@@ -127,11 +133,13 @@ cc_library_static {
 
     defaults: ["jemalloc_defaults"],
 
-    include_files: ["bionic/libc/private/libc_logging.h"],
+    cflags: ["-include bionic/libc/private/libc_logging.h"],
 
     srcs: lib_src_files,
 
-    sanitize: ["never"],
+    sanitize: {
+        never: true,
+    },
 }
 
 //-----------------------------------------------------------------------
@@ -142,9 +150,10 @@ cc_library_static {
 
     defaults: ["jemalloc_defaults"],
 
-    cflags: ["-DJEMALLOC_JET"],
-
-    local_include_files: ["android/include/libc_logging.h"],
+    cflags: [
+        "-DJEMALLOC_JET",
+        "-include android/include/libc_logging.h",
+    ],
 
     srcs: lib_src_files,
 
@@ -171,9 +180,10 @@ cc_library_static {
 
     defaults: ["jemalloc_defaults"],
 
-    cflags: ["-DJEMALLOC_UNIT_TEST"],
-
-    local_include_files: ["android/include/libc_logging.h"],
+    cflags: [
+        "-DJEMALLOC_UNIT_TEST",
+        "-include android/include/libc_logging.h",
+    ],
 
     local_include_dirs: [
         "test/src",
@@ -190,10 +200,13 @@ cc_library_static {
 // jemalloc unit tests
 //-----------------------------------------------------------------------
 unit_tests = [
+    "test/unit/a0.c",
+    "test/unit/arena_reset.c",
     "test/unit/atomic.c",
     "test/unit/bitmap.c",
     "test/unit/ckh.c",
     "test/unit/decay.c",
+    "test/unit/fork.c",
     "test/unit/hash.c",
     "test/unit/junk.c",
     "test/unit/junk_alloc.c",
@@ -224,6 +237,7 @@ unit_tests = [
     "test/unit/ticker.c",
     "test/unit/tsd.c",
     "test/unit/util.c",
+    "test/unit/witness.c",
     "test/unit/zero.c",
 ]
 
@@ -234,9 +248,10 @@ cc_test {
 
     product_variables: common_product_variables,
 
-    cflags: common_cflags + ["-DJEMALLOC_UNIT_TEST"],
-
-    local_include_files: ["android/include/libc_logging.h"],
+    cflags: common_cflags + [
+        "-DJEMALLOC_UNIT_TEST",
+        "-include android/include/libc_logging.h",
+    ],
 
     local_include_dirs: common_c_local_includes + [
         "test/src",
@@ -260,9 +275,10 @@ cc_library_static {
 
     defaults: ["jemalloc_defaults"],
 
-    cflags: ["-DJEMALLOC_INTEGRATION_TEST"],
-
-    local_include_files: ["android/include/libc_logging.h"],
+    cflags: [
+        "-DJEMALLOC_INTEGRATION_TEST",
+        "-include android/include/libc_logging.h",
+    ],
 
     local_include_dirs: [
         "test/src",
@@ -300,9 +316,10 @@ cc_test {
 
     product_variables: common_product_variables,
 
-    cflags: common_cflags + ["-DJEMALLOC_INTEGRATION_TEST"],
-
-    local_include_files: ["android/include/libc_logging.h"],
+    cflags: common_cflags + [
+        "-DJEMALLOC_INTEGRATION_TEST",
+        "-include android/include/libc_logging.h",
+    ],
 
     local_include_dirs: common_c_local_includes + [
         "test/src",
