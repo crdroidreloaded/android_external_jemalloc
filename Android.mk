@@ -19,6 +19,8 @@ LOCAL_PATH := $(call my-dir)
 jemalloc_common_cflags := \
 	-std=gnu11 \
 	-D_REENTRANT \
+	-O3 \
+	-funroll-loops \
 	-fvisibility=hidden \
 	-Wno-unused-parameter \
 	-Wno-type-limits \
@@ -97,6 +99,7 @@ jemalloc_lib_src_files := \
 	src/prof.c \
 	src/quarantine.c \
 	src/rtree.c \
+        src/spin.c \
 	src/stats.c \
 	src/tcache.c \
 	src/ticker.c \

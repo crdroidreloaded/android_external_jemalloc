@@ -15,8 +15,10 @@
 //
 
 common_cflags = [
-    "-std=gnu99",
+    "-std=gnu11",
     "-D_REENTRANT",
+    "-O3",
+    "-funroll-loops",
     "-fvisibility=hidden",
     "-Wno-unused-parameter",
     "-Wno-type-limits",
@@ -117,6 +119,7 @@ lib_src_files = [
     "src/prof.c",
     "src/quarantine.c",
     "src/rtree.c",
+    "src/spin.c",
     "src/stats.c",
     "src/tcache.c",
     "src/ticker.c",
