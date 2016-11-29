@@ -131,9 +131,6 @@ LOCAL_C_INCLUDES := \
 LOCAL_SRC_FILES := \
 	$(jemalloc_lib_src_files) \
 
-# This is linked into libc, which asan runtime library depends on.
-LOCAL_SANITIZE := never
-
 LOCAL_CXX_STL := none
 
 include $(BUILD_STATIC_LIBRARY)
