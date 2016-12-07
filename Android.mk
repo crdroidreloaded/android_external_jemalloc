@@ -19,8 +19,6 @@ LOCAL_PATH := $(call my-dir)
 jemalloc_common_cflags := \
 	-std=gnu11 \
 	-D_REENTRANT \
-	-O3 \
-	-funroll-loops \
 	-fvisibility=hidden \
 	-Wno-unused-parameter \
 	-Wno-type-limits \
@@ -230,6 +228,8 @@ jemalloc_unit_tests := \
 	test/unit/mq.c \
 	test/unit/mtx.c \
 	test/unit/nstime.c \
+	test/unit/pack.c \
+	test/unit/pages.c \
 	test/unit/prng.c \
 	test/unit/prof_accum.c \
 	test/unit/prof_active.c \
