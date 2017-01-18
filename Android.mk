@@ -50,15 +50,12 @@ jemalloc_common_cflags += \
 	-DANDROID_LG_TCACHE_MAXCLASS_DEFAULT=16 \
 
 # Only enable the tcache on non-svelte configurations, to save PSS.
-ifneq ($(MALLOC_SVELTE),true)
 jemalloc_common_cflags += \
 	-UANDROID_MAX_ARENAS \
 	-DANDROID_MAX_ARENAS=2 \
 	-DJEMALLOC_TCACHE \
 	-DANDROID_TCACHE_NSLOTS_SMALL_MAX=8 \
 	-DANDROID_TCACHE_NSLOTS_LARGE=16 \
-
-endif
 
 # Use a 512K chunk size on 32 bit systems.
 # This keeps the total amount of virtual address space consumed
