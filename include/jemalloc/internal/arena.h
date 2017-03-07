@@ -36,7 +36,7 @@ typedef enum {
  */
 #define	PURGE_DEFAULT		purge_mode_decay
 /* Default decay time in seconds. */
-#define	DECAY_TIME_DEFAULT	2
+#define	DECAY_TIME_DEFAULT	1
 /* End ANDROID change */
 /* Number of event ticks between time checks. */
 #define	DECAY_NTICKS_PER_UPDATE	1000

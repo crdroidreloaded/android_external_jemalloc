@@ -13,11 +13,7 @@
 #  define PAGES_PROT_DECOMMIT (PROT_NONE)
 static int	mmap_flags;
 #endif
-#if !defined(__ANDROID__)
 static bool	os_overcommits;
-#else
-static const bool	os_overcommits = true;
-#endif
 
 /******************************************************************************/
 /* Defines/includes needed for special android code. */
@@ -309,7 +305,6 @@ pages_boot(void)
 	mmap_flags = MAP_PRIVATE | MAP_ANON;
 #endif
 
-#if !defined(__ANDROID__)
 #ifdef JEMALLOC_SYSCTL_VM_OVERCOMMIT
 	os_overcommits = os_overcommits_sysctl();
 #elif defined(JEMALLOC_PROC_SYS_VM_OVERCOMMIT_MEMORY)
@@ -320,6 +315,5 @@ pages_boot(void)
 #  endif
 #else
 	os_overcommits = false;
-#endif
 #endif
 }
