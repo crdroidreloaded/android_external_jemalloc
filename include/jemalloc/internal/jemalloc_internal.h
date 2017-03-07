@@ -106,6 +106,13 @@ static const bool config_tls =
     false
 #endif
     ;
+static const bool config_thp =
+#ifdef JEMALLOC_THP
+    true
+#else
+    false
+#endif
+    ;
 static const bool config_utrace =
 #ifdef JEMALLOC_UTRACE
     true

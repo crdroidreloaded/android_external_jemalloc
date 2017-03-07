@@ -56,6 +56,7 @@ jemalloc_common_cflags += \
 	-DJEMALLOC_TCACHE \
 	-DANDROID_TCACHE_NSLOTS_SMALL_MAX=8 \
 	-DANDROID_TCACHE_NSLOTS_LARGE=16 \
+	-DJEMALLOC_THP \
 
 # Use a 512K chunk size on 32 bit systems.
 # This keeps the total amount of virtual address space consumed
