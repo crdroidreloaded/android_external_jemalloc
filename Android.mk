@@ -46,17 +46,23 @@ jemalloc_common_cflags := \
 # Default to a single arena for svelte configurations to minimize
 # PSS consumed by jemalloc.
 jemalloc_common_cflags += \
-	-DANDROID_MAX_ARENAS=1 \
 	-DANDROID_LG_TCACHE_MAXCLASS_DEFAULT=16 \
 
+ifeq ($(MALLOC_SVELTE),true)
+# Use a single arena on svelte devices to keep the PSS consumption as low
+# as possible.
+jemalloc_common_cflags += \
+	-DANDROID_MAX_ARENAS=1 \
+
+else
 # Only enable the tcache on non-svelte configurations, to save PSS.
 jemalloc_common_cflags += \
-	-UANDROID_MAX_ARENAS \
 	-DANDROID_MAX_ARENAS=2 \
 	-DJEMALLOC_TCACHE \
 	-DANDROID_TCACHE_NSLOTS_SMALL_MAX=8 \
 	-DANDROID_TCACHE_NSLOTS_LARGE=16 \
-	-DJEMALLOC_THP \
+
+endif
 
 # Use a 512K chunk size on 32 bit systems.
 # This keeps the total amount of virtual address space consumed
